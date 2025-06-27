@@ -18,9 +18,15 @@ typedef struct {
 	ConstantPool pool;
 } Chunk;
 
+typedef struct {
+	int occurrence;
+	int line_number;
+} Line;
+
 void new_chunk(Chunk *chunk);
 void free_chunk(Chunk *chunk);
 void write_byte_to_chunk(Chunk *chunk, uint8_t byte, int line);
 int add_constant(Chunk *chunk, Value value);
+int get_line_number_by_instruction_index(int index); 
 
 #endif
