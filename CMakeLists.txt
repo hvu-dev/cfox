@@ -12,4 +12,9 @@ add_executable(cfox
         memory.c
 		value.h
 		value.c
-		main.c)
+		main.c
+		vm.h
+		vm.c
+		common.h
+		common.c
+)

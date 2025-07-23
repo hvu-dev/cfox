@@ -10,3 +10,7 @@ const String b = "hello";
 ```
 These "hello" values are not likely to be changed at runtime, so they can use a single memory unit.
 - Each insutrction has a specific format: `{OPCODE}{OPERAND}` which takes 2 bytes
+- We can arrange instructions and use a program counter to guide the machine to the next instruction.
+
+### Stack-based VM
+
