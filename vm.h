@@ -1,0 +1,30 @@
+#ifndef VM_H
+#define VM_H
+
+#include "chunk.h"
+#include "value.h"
+
+#define STACK_MAX 256
+
+typedef struct {
+    Chunk *chunk;
+    uint8_t *ip; // instruction pointer (program counter): the instruction is going to be executed NEXT
+	Value stack[STACK_MAX];
+	Value *stackTop; // points at the "next" value of the stack, not the currently being used one
+} VM;
+
+typedef enum {
+    INTERPRETER_OK,
+    INTERPRETER_COMPILE_ERROR,
+    INTERPRETER_RUNTIME_ERROR
+} InterpretResult;
+
+void init_vm();
+void free_vm();
+InterpretResult interpret(Chunk *chunk);
+InterpretResult run();
+
+void push(Value value);
+Value pop();
+#endif //VM_H
+
