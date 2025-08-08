@@ -17,4 +17,8 @@ add_executable(cfox
 		vm.c
 		common.h
 		common.c
+		compiler.h
+		compiler.c
+		scanner.h
+		scanner.c
 )
