@@ -64,15 +64,14 @@ void skip_white_space() {
     switch (c) {
     case ' ':
     case '\t':
-    case '\r': {
+    case '\r':
       advance();
-    }
-    case '\n': {
+      break;
+    case '\n':
       scanner.current_line++;
       advance();
       break;
-    }
-    case '/': {
+    case '/':
       if (peek_next() == '/') {
         while (peek() != '\n' && !is_at_eof()) {
           advance();
@@ -80,7 +79,6 @@ void skip_white_space() {
       } else
         return;
       break;
-    }
     default:
       return;
     }
@@ -194,7 +192,7 @@ Token scan_token() {
   scanner.start = scanner.current;
 
   if (is_at_eof())
-    make_token(TOKEN_EOF);
+    return make_token(TOKEN_EOF);
 
   char c = advance();
 
