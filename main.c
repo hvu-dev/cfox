@@ -65,7 +65,7 @@ int main(int argc, const char *argv[]) {
   if(argc == 1) {
     start_repl();
   } else if (argc == 2) {
-    run_file(argv[1])
+    run_file(argv[1]);
   } else {
     fprintf(stderr, "Invalid numbers of arguments");
     exit(64);
