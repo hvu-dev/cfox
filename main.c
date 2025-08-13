@@ -18,6 +18,7 @@ static void start_repl() {
     }
 
     interpret(line);
+    printf("\n");
   }
 }
 
