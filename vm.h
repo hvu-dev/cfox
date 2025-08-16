@@ -11,8 +11,8 @@ typedef struct {
   uint8_t *ip; // instruction pointer (program counter): the instruction is
                // going to be executed NEXT
   Value stack[STACK_MAX];
-  Value *stackTop; // points at the "next" value of the stack, not the currently
-                   // being used one
+  Value *stack_top; // points at the "next" value of the stack, not the
+                    // currently being used one
 } VM;
 
 typedef enum {

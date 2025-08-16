@@ -7,6 +7,7 @@
 #include "common.h"
 #include "compiler.h"
 #include "scanner.h"
+#include "value.h"
 
 #ifdef DEBUG_PRINT_CODE
 #include "debug.h"
@@ -48,6 +49,7 @@ static void parse_unary();
 static void parse_binary();
 static void parse_number();
 static void parse_expression();
+static void parse_literal();
 static ParseRule *get_rule(TokenType operator);
 static void parse_precedence(Precedence precedence);
 
@@ -71,31 +73,31 @@ ParseRule rules[] = {
     [TOKEN_SEMICOLON] = {NULL, NULL, PREC_NONE},
     [TOKEN_SLASH] = {NULL, parse_binary, PREC_FACTOR},
     [TOKEN_STAR] = {NULL, parse_binary, PREC_FACTOR},
-    [TOKEN_BANG] = {NULL, NULL, PREC_NONE},
-    [TOKEN_BANG_EQUAL] = {NULL, NULL, PREC_NONE},
+    [TOKEN_BANG] = {parse_unary, NULL, PREC_NONE},
+    [TOKEN_BANG_EQUAL] = {NULL, parse_binary, PREC_EQUALITY},
     [TOKEN_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_EQUAL_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_GREATER] = {NULL, NULL, PREC_NONE},
-    [TOKEN_GREATER_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LESS] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LESS_EQUAL] = {NULL, NULL, PREC_NONE},
+    [TOKEN_EQUAL_EQUAL] = {NULL, parse_binary, PREC_EQUALITY},
+    [TOKEN_GREATER] = {NULL, parse_binary, PREC_EQUALITY},
+    [TOKEN_GREATER_EQUAL] = {NULL, parse_binary, PREC_EQUALITY},
+    [TOKEN_LESS] = {NULL, parse_binary, PREC_EQUALITY},
+    [TOKEN_LESS_EQUAL] = {NULL, parse_binary, PREC_EQUALITY},
     [TOKEN_IDENTIFIER] = {NULL, NULL, PREC_NONE},
     [TOKEN_STRING] = {NULL, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {parse_number, NULL, PREC_NONE},
     [TOKEN_AND] = {NULL, NULL, PREC_NONE},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_FALSE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_FALSE] = {parse_literal, NULL, PREC_NONE},
     [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
     [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
     [TOKEN_IF] = {NULL, NULL, PREC_NONE},
-    [TOKEN_NIL] = {NULL, NULL, PREC_NONE},
+    [TOKEN_NULL] = {parse_literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, NULL, PREC_NONE},
     [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
     [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
     [TOKEN_SUPER] = {NULL, NULL, PREC_NONE},
     [TOKEN_THIS] = {NULL, NULL, PREC_NONE},
-    [TOKEN_TRUE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_TRUE] = {parse_literal, NULL, PREC_NONE},
     [TOKEN_VAR] = {NULL, NULL, PREC_NONE},
     [TOKEN_WHILE] = {NULL, NULL, PREC_NONE},
     [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
@@ -203,7 +205,7 @@ static void parse_precedence(Precedence precedence) {
 
 static void parse_number() {
   double value = strtod(parser.previous.start, NULL);
-  emit_constant(value);
+  emit_constant(NUMBER_VAL(value));
 }
 
 static void parse_expression() { parse_precedence(PREC_ASSIGNMENT); }
@@ -233,6 +235,24 @@ static void parse_binary() {
   case TOKEN_SLASH:
     emit_byte(OP_DIVIDE);
     break;
+  case TOKEN_BANG_EQUAL:
+    emit_bytes(OP_EQUAL, OP_NOT);
+    break;
+  case TOKEN_EQUAL_EQUAL:
+    emit_byte(OP_EQUAL);
+    break;
+  case TOKEN_GREATER:
+    emit_byte(OP_GREATER);
+    break;
+  case TOKEN_GREATER_EQUAL:
+    emit_bytes(OP_LESS, OP_NOT);
+    break;
+  case TOKEN_LESS:
+    emit_byte(OP_LESS);
+    break;
+  case TOKEN_LESS_EQUAL:
+    emit_bytes(OP_GREATER, OP_NOT);
+    break;
   default:
     return;
   }
@@ -246,6 +266,25 @@ static void parse_unary() {
   switch (operator_type) {
   case TOKEN_MINUS:
     emit_byte(OP_NEGATE);
+    break;
+  case TOKEN_BANG:
+    emit_byte(OP_NOT);
+    break;
+  default:
+    return;
+  }
+}
+
+static void parse_literal() {
+  switch (parser.previous.type) {
+  case TOKEN_FALSE:
+    emit_byte(OP_FALSE);
+    break;
+  case TOKEN_TRUE:
+    emit_byte(OP_TRUE);
+    break;
+  case TOKEN_NULL:
+    emit_byte(OP_NULL);
     break;
   default:
     return;
