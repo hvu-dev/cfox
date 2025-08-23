@@ -1,7 +1,9 @@
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "memory.h"
+#include "object.h"
 #include "value.h"
 
 ConstantPool *new_constant_pool() {
@@ -58,6 +60,27 @@ bool check_equality(Value a, Value b) {
     return AS_BOOL(a) == AS_BOOL(b);
   case VAL_NUMBER:
     return AS_NUMBER(a) == AS_NUMBER(b);
+  case VAL_OBJECT:
+    switch (OBJ_TYPE(a)) {
+    case OBJ_STRING:
+      const ObjString *aString = AS_STRING(a);
+      const ObjString *bString = AS_STRING(b);
+      /* There is another way to compare string using strcmp
+       * However it will not take size into account, for example:
+       * char a[]  = {'a', 'b', 'c', '\0'}; // explicitly add another null
+       * terminitor
+       * char b[]  = {'a', 'b', 'c'};
+       * printf("%zu", strlen(a)) // print "3"
+       * printf("%zu", strlen(b)) // print "3"
+       * printf("%zu", sizeof(a)) // print "4"
+       * printf("%zu", sizeof(b)) // print "3"
+       * printf("%s", strcmp(a, b) == 0 ? "true" : "false"); // print "true"
+       * See this example on SO for more details:
+       * https://stackoverflow.com/a/13095574
+       * */
+      return aString->length == bString->length &&
+             memcmp(aString->chars, bString->chars, aString->length) == 0;
+    }
   case VAL_NULL:
     return true;
   default:

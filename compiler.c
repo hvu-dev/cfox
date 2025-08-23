@@ -6,6 +6,7 @@
 #include "chunk.h"
 #include "common.h"
 #include "compiler.h"
+#include "object.h"
 #include "scanner.h"
 #include "value.h"
 
@@ -52,6 +53,7 @@ static void parse_expression();
 static void parse_literal();
 static ParseRule *get_rule(TokenType operator);
 static void parse_precedence(Precedence precedence);
+static void parse_string();
 
 ParseRule rules[] = {
     [TOKEN_LEFT_PAREN] =
@@ -82,7 +84,7 @@ ParseRule rules[] = {
     [TOKEN_LESS] = {NULL, parse_binary, PREC_EQUALITY},
     [TOKEN_LESS_EQUAL] = {NULL, parse_binary, PREC_EQUALITY},
     [TOKEN_IDENTIFIER] = {NULL, NULL, PREC_NONE},
-    [TOKEN_STRING] = {NULL, NULL, PREC_NONE},
+    [TOKEN_STRING] = {parse_string, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {parse_number, NULL, PREC_NONE},
     [TOKEN_AND] = {NULL, NULL, PREC_NONE},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
@@ -289,6 +291,11 @@ static void parse_literal() {
   default:
     return;
   }
+}
+
+static void parse_string() {
+  emit_constant(OBJECT_VAL(
+      copy_string(parser.previous.start + 1, parser.previous.length - 2)))
 }
 
 bool compile(const char *source, Chunk *chunk) {
