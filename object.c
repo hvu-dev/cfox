@@ -8,7 +8,8 @@
 
 #include "memory.h"
 #include "object.h"
-// #include "value.h"
+#include "value.h"
+#include "vm.h"
 
 #define ALLOCATE_OBJ(type, object_type)                                        \
   (type *)allocate_object(sizeof(type), object_type)
@@ -16,7 +17,8 @@
 static FoxObj *allocate_object(size_t size, ObjType type) {
   FoxObj *obj = (FoxObj *)reallocate(NULL, 0, size);
   obj->type = type;
-
+  obj->next = vm.objects;
+  vm.objects = obj;
   return obj;
 }
 

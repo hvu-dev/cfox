@@ -14,6 +14,7 @@ typedef enum {
 
 struct FoxObj {
   ObjType type;
+  struct FoxObj *next;
 };
 
 struct ObjString {

@@ -13,12 +13,15 @@
 #include "object.h"
 #include "vm.h"
 
-static VM vm;
+VM vm;
 static void reset_stack() { vm.stack_top = vm.stack; }
 
-void init_vm() { reset_stack(); }
+void init_vm() {
+  reset_stack();
+  vm.objects = NULL;
+}
 
-void free_vm() {}
+void free_vm() { free_objects(); }
 
 Value pop() {
   vm.stack_top--;
