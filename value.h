@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+typedef struct FoxObj FoxObj;
+typedef struct ObjString ObjString;
+
 /* Using tagged union to represent a "Value" and its type
  * A union in C will store multiple values in the same memory address which will
  * take X bytes, where X is the type has the largest memory size.
@@ -25,6 +28,7 @@ typedef enum {
   VAL_BOOL,
   VAL_NULL,
   VAL_NUMBER,
+  VAL_OBJECT,
 } ValueType;
 
 // This Value struct will take 16 bytes
@@ -36,19 +40,23 @@ typedef struct {
   union {
     bool boolean;
     double number;
+    FoxObj *obj;
   } as;
 } Value;
 
 #define IS_BOOL(value) ((value).type == VAL_BOOL)
 #define IS_NULL(value) ((value).type == VAL_NULL)
 #define IS_NUMBER(value) ((value).type == VAL_NUMBER)
+#define IS_OBJECT(value) ((value).type == VAL_OBJECT)
 
 #define AS_BOOL(value) ((value).as.boolean)
 #define AS_NUMBER(value) ((value).as.number)
+#define AS_OBJECT(value) ((value).as.obj)
 
 #define BOOL_VAL(value) ((Value){VAL_BOOL, {.boolean = value}})
 #define NULL_VAL ((Value){VAL_NULL, {.number = 0}})
 #define NUMBER_VAL(value) ((Value){VAL_NUMBER, {.number = value}})
+#define OBJECT_VAL(object) ((Value){VAL_OBJECT, {.obj = (FoxObj *)object}})
 
 typedef struct {
   int capacity;

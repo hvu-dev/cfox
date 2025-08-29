@@ -27,5 +27,6 @@ a != b
 // Or can be translated to: OP_NOT(OPERAND OP_EQUAL_EQUAL OPERAND)
 // Which result in less required OP code in the compiler, in this case, OP_NOT_EQUAL is redundant.
 ```
+- It's very important to free any object that is dynamically allocated, for example when we create strings, and concat tthose strings.
 ### Pratt Parsing
 ### Tagged Union

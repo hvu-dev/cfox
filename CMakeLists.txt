@@ -21,4 +21,6 @@ add_executable(cfox
 		compiler.c
 		scanner.h
 		scanner.c
+		object.h
+		object.c
 )

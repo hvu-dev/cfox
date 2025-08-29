@@ -13,7 +13,10 @@ typedef struct {
   Value stack[STACK_MAX];
   Value *stack_top; // points at the "next" value of the stack, not the
                     // currently being used one
+  FoxObj *objects;
 } VM;
+
+extern VM vm;
 
 typedef enum {
   INTERPRETER_OK,

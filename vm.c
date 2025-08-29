@@ -1,21 +1,27 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "chunk.h"
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
+#include "memory.h"
 #include "value.h"
 
+#include "object.h"
 #include "vm.h"
 
-static VM vm;
+VM vm;
 static void reset_stack() { vm.stack_top = vm.stack; }
 
-void init_vm() { reset_stack(); }
+void init_vm() {
+  reset_stack();
+  vm.objects = NULL;
+}
 
-void free_vm() {}
+void free_vm() { free_objects(); }
 
 Value pop() {
   vm.stack_top--;
@@ -39,6 +45,22 @@ static void make_runtime_error(const char *format, ...) {
   fprintf(stderr, "[Line %d] in script\n", line);
 
   reset_stack();
+}
+
+void concatenate() {
+  ObjString *b = AS_STRING(pop());
+  ObjString *a = AS_STRING(pop());
+
+  const size_t new_length = a->length + b->length;
+  char *new_chars = ALLOCATE(char, new_length + 1);
+
+  memcpy(new_chars, a->chars, a->length);
+  memcpy(new_chars + a->length, b->chars, b->length);
+
+  new_chars[new_length] = '\0';
+
+  ObjString *result = take_string(new_chars, new_length);
+  push(OBJECT_VAL(result));
 }
 
 InterpretResult run() {
@@ -87,7 +109,17 @@ InterpretResult run() {
       print_value(pop());
       return INTERPRETER_OK;
     case OP_ADD:
-      BINARY_OP(NUMBER_VAL, +);
+      if (IS_STRING(peek(0)) && IS_STRING(peek(1))) {
+        concatenate();
+      } else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) {
+        double b = AS_NUMBER(pop());
+        double a = AS_NUMBER(pop());
+
+        push(NUMBER_VAL(a + b));
+      } else {
+        make_runtime_error("Operands must be strings or numbers");
+        return INTERPRETER_RUNTIME_ERROR;
+      }
       break;
     case OP_SUBSTRACT:
       BINARY_OP(NUMBER_VAL, -);
