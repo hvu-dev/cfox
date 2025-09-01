@@ -30,3 +30,7 @@ a != b
 - It's very important to free any object that is dynamically allocated, for example when we create strings, and concat tthose strings.
 ### Pratt Parsing
 ### Tagged Union
+### Hash Table
+- In this implementation (craftinginterpreters approach), we are going to use [FNV-1a](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function#FNV-1_hash) function to hash input key.
+- Open Address and Linear Probing was also chosen which is generally O(n) runtime to search a key in the worst case if there are many key fall into the same bucket and O(1) in the best case if a key is found at the calculated index.
+- When delete an element in a hash table, we choose to treat the "deleted entry" as a full bucket and set it to a special value (which was called "tombstone" by the author). During iteration through all entries of the hash table, we will can either skip it or reuse it in the case of retreive and set, respectively. 

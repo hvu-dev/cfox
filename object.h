@@ -2,6 +2,7 @@
 #define OBJECT_H
 
 #include "value.h"
+#include <stdint.h>
 
 #define OBJ_TYPE(value) (AS_OBJECT(value)->type)
 #define IS_STRING(value) is_object_type(value, OBJ_STRING)
@@ -21,6 +22,7 @@ struct ObjString {
   FoxObj obj;
   int length;
   char *chars;
+  uint32_t hash;
 };
 
 ObjString *copy_string(const char *chars, int length);
