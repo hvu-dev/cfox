@@ -9,6 +9,7 @@
 
 #include "memory.h"
 #include "object.h"
+#include "table.h"
 #include "value.h"
 #include "vm.h"
 
@@ -43,12 +44,18 @@ static ObjString *allocate_string(char *chars, int length, uint32_t hash) {
   obj->chars = chars;
   obj->length = length;
   obj->hash = hash;
+  set_entry(&vm.strings, obj, NULL_VAL);
 
   return obj;
 }
 
 ObjString *copy_string(const char *chars, int length) {
   uint32_t hashed_chars = hash_string(chars, length);
+  ObjString *interned_string =
+      find_string(&vm.strings, chars, length, hashed_chars);
+  if (interned_string != NULL)
+    return interned_string;
+
   char *copied_string = ALLOCATE(char, length + 1);
   memcpy(copied_string, chars, length);
   copied_string[length] = '\0';
@@ -57,6 +64,12 @@ ObjString *copy_string(const char *chars, int length) {
 
 ObjString *take_string(char *chars, int length) {
   uint32_t hashed_chars = hash_string(chars, length);
+  ObjString *interned_string =
+      find_string(&vm.strings, chars, length, hashed_chars);
+  if (interned_string != NULL) {
+    FREE_ARRAY(char, chars, length + 1);
+    return interned_string;
+  }
   return allocate_string(chars, length, hashed_chars);
 }
 

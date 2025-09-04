@@ -2,6 +2,7 @@
 #define VM_H
 
 #include "chunk.h"
+#include "table.h"
 #include "value.h"
 
 #define STACK_MAX 256
@@ -13,6 +14,7 @@ typedef struct {
   Value stack[STACK_MAX];
   Value *stack_top; // points at the "next" value of the stack, not the
                     // currently being used one
+  Table strings;
   FoxObj *objects;
 } VM;
 

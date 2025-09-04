@@ -5,6 +5,7 @@
 - In a native compiler to machine code, bigger constants get stored in separate "constant data" region in the binary executable. VMs also do something similar to this (e.g: [JVM associates constant pool](https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4). 
 - The idea of constant pool is that at compile time if there are multiple variables using the same values, for example:
 ```
+// In C, we can call the action reusing the same memory address "string interning"
 const String a = "hello";
 const String b = "hello";
 ```

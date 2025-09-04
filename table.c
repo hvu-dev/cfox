@@ -108,3 +108,34 @@ bool delete_entry(Table *table, ObjString *key) {
   entry->value = BOOL_VAL(true);
   return true;
 }
+
+ObjString *find_string(Table *from, const char *chars, int length,
+                       uint32_t hash) {
+  if (from->length == 0)
+    return NULL;
+
+  uint32_t index = hash % from->capacity;
+  while (true) {
+    Entry *entry = &from->entries[index];
+    if (entry->key == NULL && IS_NULL(entry->value))
+      return NULL;
+    if (entry->key->length == length && entry->key->hash == hash &&
+        memcmp(entry->key->chars, chars, length) == 0)
+      return entry->key;
+    /* There is another way to compare string using strcmp
+     * However it will not take size into account, for example:
+     * char a[]  = {'a', 'b', 'c', '\0'}; // explicitly add another null
+     * terminitor
+     * char b[]  = {'a', 'b', 'c'};
+     * printf("%zu", strlen(a)) // print "3"
+     * printf("%zu", strlen(b)) // print "3"
+     * printf("%zu", sizeof(a)) // print "4"
+     * printf("%zu", sizeof(b)) // print "3"
+     * printf("%s", strcmp(a, b) == 0 ? "true" : "false"); // print "true"
+     * See this example on SO for more details:
+     * https://stackoverflow.com/a/13095574
+     * */
+
+    index = (index + 1) % from->capacity;
+  }
+}
