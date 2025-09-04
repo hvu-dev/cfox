@@ -23,4 +23,6 @@ add_executable(cfox
 		scanner.c
 		object.h
 		object.c
+		table.h
+		table.c
 )

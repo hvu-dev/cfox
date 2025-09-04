@@ -5,6 +5,7 @@
 - In a native compiler to machine code, bigger constants get stored in separate "constant data" region in the binary executable. VMs also do something similar to this (e.g: [JVM associates constant pool](https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4). 
 - The idea of constant pool is that at compile time if there are multiple variables using the same values, for example:
 ```
+// In C, we can call the action reusing the same memory address "string interning"
 const String a = "hello";
 const String b = "hello";
 ```
@@ -30,3 +31,7 @@ a != b
 - It's very important to free any object that is dynamically allocated, for example when we create strings, and concat tthose strings.
 ### Pratt Parsing
 ### Tagged Union
+### Hash Table
+- In this implementation (craftinginterpreters approach), we are going to use [FNV-1a](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function#FNV-1_hash) function to hash input key.
+- Open Address and Linear Probing was also chosen which is generally O(n) runtime to search a key in the worst case if there are many key fall into the same bucket and O(1) in the best case if a key is found at the calculated index.
+- When delete an element in a hash table, we choose to treat the "deleted entry" as a full bucket and set it to a special value (which was called "tombstone" by the author). During iteration through all entries of the hash table, we will can either skip it or reuse it in the case of retreive and set, respectively. 

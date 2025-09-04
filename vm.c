@@ -8,6 +8,7 @@
 #include "compiler.h"
 #include "debug.h"
 #include "memory.h"
+#include "table.h"
 #include "value.h"
 
 #include "object.h"
@@ -19,9 +20,13 @@ static void reset_stack() { vm.stack_top = vm.stack; }
 void init_vm() {
   reset_stack();
   vm.objects = NULL;
+  init_table(&vm.strings);
 }
 
-void free_vm() { free_objects(); }
+void free_vm() {
+  free_objects();
+  free_table(&vm.strings);
+}
 
 Value pop() {
   vm.stack_top--;

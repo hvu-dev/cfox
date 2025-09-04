@@ -1,8 +1,8 @@
 #ifndef MEMORY_H
 #define MEMORY_H
+#include <stdlib.h>
 
 #include "object.h"
-#include "stdlib.h"
 
 #define GROW_CAPACITY(capacity) ((capacity) < 8 ? 8 : (capacity) * 2)
 #define GROW_ARRAY(type, pointer, old_count, new_count)                        \
