@@ -8,22 +8,23 @@
 #define STACK_MAX 256
 
 typedef struct {
-  Chunk *chunk;
-  uint8_t *ip; // instruction pointer (program counter): the instruction is
-               // going to be executed NEXT
-  Value stack[STACK_MAX];
-  Value *stack_top; // points at the "next" value of the stack, not the
-                    // currently being used one
-  Table strings;
-  FoxObj *objects;
+    Chunk *chunk;
+    uint8_t *ip;  // instruction pointer (program counter): the instruction is
+                  // going to be executed NEXT
+    Value stack[STACK_MAX];
+    Value *stack_top;  // points at the "next" value of the stack, not the
+                       // currently being used one
+    Table globals;     // Define global variable
+    Table strings;     // Define string values
+    FoxObj *objects;
 } VM;
 
 extern VM vm;
 
 typedef enum {
-  INTERPRETER_OK,
-  INTERPRETER_COMPILE_ERROR,
-  INTERPRETER_RUNTIME_ERROR
+    INTERPRETER_OK,
+    INTERPRETER_COMPILE_ERROR,
+    INTERPRETER_RUNTIME_ERROR
 } InterpretResult;
 
 void init_vm();
@@ -33,4 +34,4 @@ InterpretResult run();
 
 void push(Value value);
 Value pop();
-#endif // VM_H
+#endif  // VM_H
