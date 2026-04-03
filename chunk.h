@@ -6,33 +6,38 @@
 #include "value.h"
 
 typedef enum {
-  OP_CONSTANT,
-  OP_NULL,
-  OP_TRUE,
-  OP_FALSE,
-  OP_RETURN,
-  OP_NEGATE,
-  OP_ADD,
-  OP_SUBSTRACT,
-  OP_MULTIPLY,
-  OP_DIVIDE,
-  OP_NOT,
-  OP_EQUAL,
-  OP_GREATER,
-  OP_LESS,
+    OP_CONSTANT,
+    OP_NULL,
+    OP_TRUE,
+    OP_FALSE,
+    OP_RETURN,
+    OP_NEGATE,
+    OP_PRINT,
+    OP_ADD,
+    OP_SUBSTRACT,
+    OP_MULTIPLY,
+    OP_DIVIDE,
+    OP_NOT,
+    OP_EQUAL,
+    OP_GREATER,
+    OP_LESS,
+    OP_POP,
+    OP_DEFINE_GLOBAL,
+    OP_GET_GLOBAL,
+    OP_SET_GLOBAL,
 } OpCode;
 
 typedef struct {
-  int length;
-  int capacity;
-  uint8_t *code;
-  int *lines;
-  ConstantPool pool;
+    int length;
+    int capacity;
+    uint8_t *code;
+    int *lines;
+    ConstantPool pool;
 } Chunk;
 
 typedef struct {
-  int occurrence;
-  int line_number;
+    int occurrence;
+    int line_number;
 } Line;
 
 void new_chunk(Chunk *chunk);
