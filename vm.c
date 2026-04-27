@@ -158,23 +158,27 @@ InterpretResult run() {
             case OP_NOT:
                 push(BOOL_VAL(is_falsy(pop())));
                 break;
-            case OP_EQUAL:
+            case OP_EQUAL: {
                 Value b = pop();
                 Value a = pop();
                 push(BOOL_VAL(check_equality(a, b)));
                 break;
-            case OP_GREATER:
+            }
+            case OP_GREATER: {
                 BINARY_OP(BOOL_VAL, >);
                 break;
-            case OP_LESS:
+            }
+            case OP_LESS: {
                 BINARY_OP(BOOL_VAL, <);
                 break;
-            case OP_DEFINE_GLOBAL:
+            }
+            case OP_DEFINE_GLOBAL: {
                 ObjString *name = READ_STRING();
                 set_entry(&vm.globals, name, peek(0));
                 pop();
                 break;
-            case OP_GET_GLOBAL:
+            }
+            case OP_GET_GLOBAL: {
                 ObjString *var_name = READ_STRING();
                 Value value;
                 if (!get_entry(&vm.globals, var_name, &value)) {
@@ -186,14 +190,29 @@ InterpretResult run() {
 
                 push(value);
                 break;
-            case OP_SET_GLOBAL:
-                ObjString *cur_name = READ_STRING();
-                if (set_entry(&vm.globals, cur_name, peek(0))) {
-                    delete_entry(&vm.globals, name);
-                    make_runtime_error("Undefined variable '%s'", name->chars);
+            }
+            case OP_SET_GLOBAL: {
+                ObjString *var_name = READ_STRING();
+                if (set_entry(&vm.globals, var_name, peek(0))) {
+                    delete_entry(&vm.globals, var_name);
+                    make_runtime_error(
+                        "Undefined variable '%s'", var_name->chars
+                    );
 
                     return INTERPRETER_RUNTIME_ERROR;
                 }
+                break;
+            }
+            case OP_GET_LOCAL: {
+                uint8_t slot = READ_BYTE();
+                push(vm.stack[slot]);
+                break;
+            }
+            case OP_SET_LOCAL: {
+                uint8_t slot = READ_BYTE();
+                vm.stack[slot] = peek(0);
+                break;
+            }
         }
     }
 #undef READ_BYTE
